@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, Notifiable;
+    use HasRoles, Notifiable;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -26,12 +29,12 @@ class User extends Authenticatable
 
     public function CreatedDishes(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Dish::class);
+        return $this->hasMany(Dish::class, 'owner_id', 'id');
     }
 
-    public function FavotitesDishes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function FavotitesDishes(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->hasMany(Dish::class);
+        return $this->belongsToMany(Dish::class, 'likes', 'owner_id', 'dish_id');
     }
 
     /**

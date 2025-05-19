@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Dish;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -24,6 +25,8 @@ class HomeController extends Controller
      */
     public function home()
     {
-        return view('home', ['dishes'=>Dish::all()]);
+        $this->authorize('viewAny', Dish::class);
+
+        return view('home', ['dishes'=>Dish::with(['owner', 'likedBy'])->paginate(5)]);
     }
 }
